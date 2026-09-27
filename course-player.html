@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Video Creation for Beginners — Course</title>
+<style>
+  :root {
+    --bg: #f6f4f0;
+    --card: #ffffff;
+    --ink: #1c1a17;
+    --muted: #6b655c;
+    --accent: #c2570b;
+    --accent-soft: #fdf0e3;
+    --green: #1e7d46;
+    --red: #b3261e;
+    --line: #e6e1d8;
+    --radius: 14px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .app { display: flex; min-height: 100vh; }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    width: 290px;
+    flex-shrink: 0;
+    background: var(--card);
+    border-right: 1px solid var(--line);
+    padding: 24px 16px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar h1 { font-size: 17px; line-height: 1.35; margin-bottom: 4px; padding: 0 8px; }
+  .sidebar .sub { font-size: 12px; color: var(--muted); padding: 0 8px 16px; }
+  .progress-wrap { padding: 0 8px 16px; }
+  .progress-bar { height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 99px; width: 0%; transition: width .4s ease; }
+  .progress-label { font-size: 12px; color: var(--muted); margin-top: 6px; }
+  .lesson-list { list-style: none; margin-top: 8px; }
+  .lesson-item button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 10px;
+    border: none;
+    background: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    color: var(--ink);
+    transition: background .15s;
+  }
+  .lesson-item button:hover { background: var(--bg); }
+  .lesson-item.active button { background: var(--accent-soft); font-weight: 600; }
+  .lesson-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--line);
+    color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .lesson-item.active .lesson-num { background: var(--accent); color: #fff; }
+  .lesson-item.done .lesson-num { background: var(--green); color: #fff; }
+  .lesson-item.done .lesson-num::after { content: "✓"; }
+  .lesson-item.done .lesson-num span { display: none; }
+  .lesson-num span { display: inline; }
+  .menu-toggle { display: none; }
+
+  /* ---------- Main ---------- */
+  .main { flex: 1; padding: 32px 28px 80px; max-width: 860px; }
+  .lesson-head { margin-bottom: 20px; }
+  .lesson-kicker { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+  .lesson-head h2 { font-size: 28px; line-height: 1.25; margin: 4px 0 8px; }
+  .lesson-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 13px; color: var(--muted); }
+  .chip { background: var(--card); border: 1px solid var(--line); border-radius: 99px; padding: 3px 12px; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+  .card h3 { font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .card h3 .icon { font-size: 18px; }
+
+  /* audio */
+  .audio-box audio { width: 100%; display: block; }
+  .audio-note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .audio-note a { color: var(--accent); }
+
+  /* lesson text */
+  .lesson-section { margin-bottom: 16px; }
+  .lesson-section h4 { font-size: 14.5px; color: var(--accent); margin-bottom: 6px; }
+  .lesson-section p { font-size: 15px; margin-bottom: 10px; color: #33302b; }
+
+  /* video script table */
+  .video-script table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .video-script th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+  .video-script td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .video-script tr td:first-child { white-space: nowrap; font-weight: 600; color: var(--accent); width: 90px; }
+
+  /* quiz */
+  .quiz-q { margin-bottom: 18px; }
+  .quiz-q p.q { font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+  .quiz-opt { display: flex; align-items: flex-start; gap: 9px; padding: 8px 10px; border-radius: 9px; cursor: pointer; font-size: 14.5px; }
+  .quiz-opt:hover { background: var(--bg); }
+  .quiz-opt input { margin-top: 4px; accent-color: var(--accent); }
+  .quiz-opt.correct { background: #e9f5ee; }
+  .quiz-opt.correct .opt-letter { color: var(--green); font-weight: 700; }
+  .quiz-opt.wrong { background: #fbeae8; }
+  .quiz-opt.wrong .opt-letter { color: var(--red); font-weight: 700; }
+  .quiz-opt.disabled { pointer-events: none; }
+  .quiz-feedback { font-size: 13px; color: var(--muted); margin-top: 6px; display: none; }
+  .quiz-feedback.show { display: block; }
+  .quiz-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+  .btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 11px 22px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter .15s;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.secondary { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .quiz-score { font-size: 15px; font-weight: 700; }
+  .quiz-score.pass { color: var(--green); }
+  .quiz-score.fail { color: var(--red); }
+
+  /* exercise */
+  .exercise ol { padding-left: 20px; }
+  .exercise li { font-size: 14.5px; margin-bottom: 8px; }
+
+  /* nav */
+  .lesson-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 8px; }
+  .lesson-nav .btn { min-width: 130px; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* welcome */
+  .welcome { text-align: center; padding: 60px 24px; }
+  .welcome h2 { font-size: 30px; margin-bottom: 12px; }
+  .welcome p { color: var(--muted); max-width: 520px; margin: 0 auto 24px; }
+  .welcome .stats { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+  .welcome .stat { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 22px; min-width: 130px; }
+  .welcome .stat b { display: block; font-size: 24px; color: var(--accent); }
+  .welcome .stat span { font-size: 13px; color: var(--muted); }
+
+  @media (max-width: 760px) {
+    .app { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--line); padding: 14px; }
+    .sidebar .lesson-list { display: none; }
+    .sidebar.open .lesson-list { display: block; }
+    .menu-toggle {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: none; border: 1px solid var(--line); border-radius: 8px;
+      padding: 7px 12px; font-size: 13px; cursor: pointer; margin-bottom: 10px;
+    }
+    .main { padding: 20px 16px 60px; }
+    .lesson-head h2 { font-size: 23px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <button class="menu-toggle" id="menuToggle">☰ Lessons</button>
+    <h1>AI Video Creation for Beginners</h1>
+    <div class="sub">6 lessons · audio · quizzes · exercises</div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel">0 of 6 lessons completed</div>
+    </div>
+    <ul class="lesson-list" id="lessonList"></ul>
+  </aside>
+
+  <main class="main" id="main"></main>
+</div>
+
+<script>
+/* ================= COURSE DATA ================= */
+const COURSE = {
+  title: "AI Video Creation for Beginners",
+  lessons: [
+    {
+      id: 1,
+      title: "What You Need to Get Started",
+      length: "~15 min",
+      goal: "Understand the four parts of every AI video, set up every tool, and generate your first test clip.",
+      sections: [
+        { h: "Cold open", p: [
+          "By the end of this course, you will have made a complete AI video — visuals, voice, captions, and music — without a camera, without an editing degree, and without spending more than a few thousand naira."
+        ]},
+        { h: "1. What this course covers — and what it does not", p: [
+          "This course covers the complete pipeline: taking an idea, writing a script an AI can use, generating video clips, adding a voice and captions, editing everything together, and getting paid for the skill. It does not cover filmmaking theory, advanced visual effects, or every button in every tool.",
+          "This space moves fast. Tools change names, prices, and interfaces every few months. That is why, in lesson two, you will learn how to evaluate any tool — not just the ones shown in this course. If you understand the pipeline, you can use any tool."
+        ]},
+        { h: "2. The four things every AI video needs", p: [
+          "Every AI video you will ever make — yours or a client's — is built from exactly four things: (1) a script — a short plan of what happens, shot by shot; (2) generated visuals — the clips themselves, created by AI video tools from your script; (3) a voice — a narration that ties the clips together; (4) an editor — the free software where clips, voice, captions, and music become one finished video.",
+          "Script, visuals, voice, editor. Every lesson in this course is one of them."
+        ]},
+        { h: "3. Why you do not need a camera, a studio, or coding skill", p: [
+          "The visuals are generated by AI from text. The voice is generated — or recorded on your phone. The editing happens in a free app with drag and drop. There is no filming, no lighting setup, no code. If you have a laptop, or even just a phone, and an internet connection, you have everything you need to start today."
+        ]},
+        { h: "4. The tools tour", p: [
+          "Text-to-video tools: Runway, Pika, Kling, and Google's Veo. You type words describing a shot, and they generate a short video clip. They are your camera crew — fast and cheap, but they need clear instructions.",
+          "ElevenLabs is your voice studio. It generates realistic narration, and it can clone a voice — including yours — with permission.",
+          "CapCut is a free editor for your phone or computer where everything comes together. Clips in, finished video out.",
+          "All of these have free tiers, which means you can follow this entire course without paying anything. Realistic budget: free tiers are enough to learn; roughly ₦10,000–₦25,000 a month (about $7–15) unlocks serious output once you start taking clients."
+        ]},
+        { h: "5. How to evaluate any tool", p: [
+          "Since tools change, here is the checklist for any new AI video tool: (1) can it turn text into video? (2) can it animate an image into video? (3) can you control the aspect ratio and the length? (4) does it have a free tier or trial? If a tool checks those four boxes, the workflow you are learning today works inside it — whatever it is called."
+        ]},
+        { h: "6. Set up your accounts", p: [
+          "Create an account on each tool: Runway, Pika or Kling, ElevenLabs, and CapCut. Use the same email for all of them. It takes ten minutes — do it now, not after the course."
+        ]},
+        { h: "7. Your first generation", p: [
+          "Open any text-to-video tool and type this exact prompt: “A plate of jollof rice on a wooden table, steam rising, slow push-in, warm cinematic light.” Set the format to vertical — 9:16 — generate, and watch. It will not be perfect. That is the point. You have just seen the raw material that everything else in this course is built from."
+        ]}
+      ],
+      videoScript: [
+        { t: "0:00–0:30", screen: "Title card: course name + lesson title. Option: host on camera, or motion graphics with AI b-roll", audio: "Cold open narration" },
+        { t: "0:30–2:00", screen: "Simple animated diagram: four boxes labelled Script, Visuals, Voice, Editor, arrows showing the pipeline", audio: "Section 1: what the course covers" },
+        { t: "2:00–4:30", screen: "Split screen: “You do NOT need” (camera, studio, code icons crossed out) vs “You DO need” (laptop, phone, internet)", audio: "Section 3: no camera needed" },
+        { t: "4:30–7:30", screen: "Screen recording: homepage of each tool — Runway, Pika, Kling, ElevenLabs, CapCut. Show the free tier pricing on each", audio: "Section 4: tools tour" },
+        { t: "7:30–9:30", screen: "On-screen checklist graphic, four ticks appearing one at a time", audio: "Section 5: evaluate any tool" },
+        { t: "9:30–11:00", screen: "Screen recording: signing up for each account (blur personal details)", audio: "Section 6: setup" },
+        { t: "11:00–13:30", screen: "Screen recording: typing the jollof-rice prompt, generating, playing the result. Show the imperfect clip proudly", audio: "Section 7: first generation" },
+        { t: "13:30–15:00", screen: "Homework list on screen, three items. End card with course name", audio: "Wrap up" }
+      ],
+      quiz: [
+        { q: "What are the four things every AI video needs?", options: ["Camera, microphone, lighting, and an editor", "A script, generated visuals, a voice, and an editor", "A studio, a camera, a voice, and captions", "A script, a camera, music, and a thumbnail"], answer: 1, why: "Script, visuals, voice, editor — that is the whole pipeline." },
+        { q: "Why do you not need a camera for this kind of video?", options: ["Because AI tools can film real people for you", "Because the visuals are generated by AI from text", "Because phone cameras are too expensive", "Because all videos are made from stock footage"], answer: 1, why: "The clips are generated from text prompts — no filming involved." },
+        { q: "Which tool is described as the “voice studio” of the pipeline?", options: ["Runway", "CapCut", "Kling", "ElevenLabs"], answer: 3, why: "ElevenLabs generates realistic narration and can clone voices." },
+        { q: "Which four questions should you ask when evaluating any new AI video tool?", options: ["Is it free, is it fast, is it popular, does it have an app?", "Text-to-video, image-to-video, control over aspect ratio and length, free tier?", "Does it render in 4K, does it have templates, is it on phone, is it cheap?", "Does it clone voices, does it add captions, does it edit, does it export?"], answer: 1, why: "Those four checks mean the workflow you are learning works in that tool." },
+        { q: "What is the homework after lesson 1?", options: ["Write a 30-second script for a restaurant", "Buy the paid tier of every tool", "Create accounts on all the tools and generate three test clips", "Edit a complete video in CapCut"], answer: 2, why: "Accounts + three test clips — and keep your best one." }
+      ],
+      exercise: [
+        "Create accounts on Runway (or Pika/Kling), ElevenLabs, and CapCut — all with the same email address.",
+        "In two different video tools, generate one test clip each using any prompt you like.",
+        "Save your best clip in a folder called “my-course-work”. You will compare it to your final project at the end of the course."
+      ]
+    },
+    {
+      id: 2,
+      title: "From Idea to a Script AI Can Use",
+      length: "~15 min",
+      goal: "Write a 30-second, one-line-per-shot script for a real product or service, with prompts that produce usable clips.",
+      sections: [
+        { h: "The hook", p: [
+          "In lesson one, you generated clips with whatever came to mind. Today you learn the difference between a prompt and a plan — the difference between clips that go nowhere and videos that get watched and paid for."
+        ]},
+        { h: "1. Why most AI videos look random", p: [
+          "AI video models do one thing well: a short clip of one subject doing one action. When your prompt asks for three things at once, the model tries to blend them, and you get mush — a person with too many fingers, a room that changes shape, a story that goes nowhere."
+        ]},
+        { h: "2. Think like a director, not a novelist", p: [
+          "A novelist writes flowing paragraphs. A director thinks in shots. One line per shot. Each line describes one moment: who or what is in the frame, what they are doing, how the camera moves, and what the light looks like. If your script reads like a story, rewrite it until it reads like a shot list."
+        ]},
+        { h: "3. The anatomy of a usable prompt", p: [
+          "There are four parts. Subject: what or who is in the shot — a plate of jollof rice. Action: what it is doing — being served, steam rising. Camera: how the frame moves — a slow push-in, static, or a tracking shot from the side. Style: the look — warm cinematic light, phone-cam feel, 4K.",
+          "Bad: “Make a cool video of a restaurant.” Good: “Close-up of jollof rice being served, steam rising, slow push-in, warm cinematic light.” Same idea, completely different result. The rule: if you cannot say it in one sentence, it is two shots."
+        ]},
+        { h: "4. Write a 30-second script", p: [
+          "A 30-second video is only five to six shots, each three to six seconds long. Example for a small restaurant in Lagos:",
+          "Shot 1: “Exterior of the restaurant in morning light, slow push-in toward the sign, cinematic.” Shot 2: “Close-up of jollof rice being served, steam rising, warm light, shallow depth of field.” Shot 3: “Hands seasoning a pot, close-up, warm cinematic light.” Shot 4: “Friends laughing around a table, candid phone-cam style.” Shot 5: “Static shot of the restaurant sign with the logo.”",
+          "That is a script. Five lines. Each line is one prompt. No story, no backstory, no paragraph — just five moments."
+        ]},
+        { h: "5. Usable versus unusable prompts", p: [
+          "The difference is specificity and restraint. A usable prompt has one subject, one action, a clear camera move, and a consistent style. An unusable prompt sounds like: “A busy day at the restaurant with customers and food and music and the chef and a happy vibe, make it cinematic and viral.” Two people, an abstract concept — happy vibe — and no camera direction at all. The AI cannot film a vibe. It can film a person laughing. So we film a person laughing."
+        ]},
+        { h: "6. The tools will not save a bad script", p: [
+          "This space moves fast. The workflow you just learned works in Runway, Pika, Kling, and Veo — the names change, the shape does not. Check the four boxes from lesson one, and you are safe anywhere."
+        ]}
+      ],
+      videoScript: [
+        { t: "0:00–0:30", screen: "Montage of “random-looking” AI clips (morphing faces, melty rooms) with a red X over each", audio: "Hook narration" },
+        { t: "0:30–2:30", screen: "Split screen: novelist's paragraph vs director's shot list, lines crossed out and rewritten live", audio: "Section 2: director vs novelist" },
+        { t: "2:30–5:30", screen: "Animated breakdown of the prompt formula: Subject + Action + Camera + Style, each word locking into place", audio: "Section 3: prompt anatomy" },
+        { t: "5:30–7:00", screen: "Side-by-side: bad prompt typed, generated mush shown; good prompt typed, clean clip shown", audio: "Bad vs good example" },
+        { t: "7:00–11:00", screen: "Live writing session: the 5-line restaurant script built line by line, with the business's real photos/logo beside it", audio: "Section 4: write a 30-second script" },
+        { t: "11:00–13:00", screen: "The unusable prompt typed in full, animated red marks highlighting each problem", audio: "Section 5: usable vs unusable" },
+        { t: "13:00–15:00", screen: "The four-box checklist from lesson 1, logos of Runway/Pika/Kling/Veo fading in around it", audio: "Section 6 + wrap up" }
+      ],
+      quiz: [
+        { q: "Why do most AI videos look random?", options: ["The tools are broken", "The prompt asks for too many things at once", "The internet is too slow", "The AI does not understand English"], answer: 1, why: "One subject, one action per prompt — more than that blends into mush." },
+        { q: "A director thinks in ________, not paragraphs.", options: ["shots", "stories", "adjectives", "music"], answer: 0, why: "One line per shot — a shot list, not a story." },
+        { q: "What are the four parts of a usable prompt?", options: ["Subject, action, camera, style", "Idea, budget, deadline, client", "Length, width, height, format", "Subject, filter, music, captions"], answer: 0, why: "Subject + action + camera + style is the formula." },
+        { q: "A 30-second video is typically how many shots?", options: ["1 long shot", "2 shots", "5 to 6 shots", "20 shots"], answer: 2, why: "5–6 shots of 3–6 seconds each." },
+        { q: "Which of these is the most usable prompt?", options: ["“A busy day at the restaurant with customers and food and a happy vibe”", "“Close-up of jollof rice being served, steam rising, slow push-in, warm cinematic light”", "“Make something viral and cinematic”", "“A restaurant, a chef, friends, music, and great food”"], answer: 1, why: "One subject, one action, clear camera, clear style." }
+      ],
+      exercise: [
+        "Write a 30-second script (5–6 lines, one per shot) for a real product or service — yours or a client's.",
+        "Every line must contain a subject, an action, a camera move, and a style.",
+        "Save it as “my-30-second-script.txt” in your “my-course-work” folder. You will generate clips from it in lesson 3."
+      ]
+    },
+    {
+      id: 3,
+      title: "Generating Your First AI Video Clips",
+      length: "~18 min",
+      goal: "Generate 3–4 usable clips from your lesson 2 script using a mainstream text-to-video tool.",
+      sections: [
+        { h: "The hook", p: [
+          "Today is the most fun lesson — and the most dangerous, because generating is addictive. The rule is simple: we generate with a plan. Your plan is the script you wrote in lesson two."
+        ]},
+        { h: "1. The workflow is the same everywhere", p: [
+          "Runway, Pika, Kling, Veo — different buttons, the same shape: prompt in, clip out. Pick one tool for this lesson. Every skill you learn today transfers to all the others."
+        ]},
+        { h: "2. Walkthrough — text to video", p: [
+          "Open your tool. Copy shot one from your lesson two script into the prompt box. Set the aspect ratio to vertical — 9:16 — because TikTok, Reels, and Shorts are vertical. Set the length to five seconds. Generate. Watch. Keep it or regenerate. That is the whole loop: prompt, settings, generate, decide."
+        ]},
+        { h: "3. Iterate twice — do not write one perfect prompt", p: [
+          "Your first generation is a draft, not a verdict. Change one thing — the camera move, the lighting — and generate again. Two short iterations beat one long perfect prompt every time, because the model needs a chance to show you what it can do. A fifty-word prompt is just a guess. Two ten-word prompts are a conversation."
+        ]},
+        { h: "4. The twenty percent rule", p: [
+          "Expect a twenty percent keeper rate. Generate ten clips, keep two. That is normal — it is not failure, it is the craft. Professionals generate in batches and curate ruthlessly."
+        ]},
+        { h: "5. Image to video — the consistency cheat", p: [
+          "Generate one strong first frame — or grab a frame from your best clip — and let the tool animate it. Your subject stays consistent across shots because the tool is working from the same image every time. This is how you keep one hero product or person looking like themselves across a whole video."
+        ]},
+        { h: "6. Generate your three to four clips", p: [
+          "Work through your script one shot at a time. Download your keepers immediately — free tiers delete old generations. And name your files like a professional: project name, shot number, tool. For example: restaurant-shot1-runway.mp4. Future you will be grateful."
+        ]},
+        { h: "7. Free tier limits", p: [
+          "You will hit limits on free tiers — that is normal, not a wall. When you do, switch tools. That is why this course teaches you the workflow instead of one product: there are always at least two tools with free credits at any given moment."
+        ]}
+      ],
+      videoScript: [
+        { t: "0:00–0:30", screen: "Fast montage of generated clips — the “addiction” — set to upbeat music", audio: "Hook narration" },
+        { t: "0:30–1:30", screen: "Four tool logos (Runway, Pika, Kling, Veo) with the same arrow diagram: prompt in, clip out", audio: "Section 1: same workflow" },
+        { t: "1:30–5:30", screen: "Screen recording: prompt pasted, 9:16 selected, 5s length, generate button, first clip played", audio: "Section 2: walkthrough" },
+        { t: "5:30–8:30", screen: "Same prompt generated twice with one change (camera move); both results played side by side", audio: "Section 3: iterate twice" },
+        { t: "8:30–10:30", screen: "Grid of 10 generations; 2 moved to “keepers” folder, 8 deleted with a red X", audio: "Section 4: 20% rule" },
+        { t: "10:30–12:30", screen: "Screen recording: still frame uploaded, image-to-video mode, animation played", audio: "Section 5: image-to-video" },
+        { t: "12:30–16:00", screen: "Speed-run: generating clips for shots 1–4 of the script, keepers downloaded and renamed on screen", audio: "Section 6: generate your clips" },
+        { t: "16:00–18:00", screen: "“Limit reached” screen on one tool, then switch to another tool, generate successfully", audio: "Section 7 + wrap up" }
+      ],
+      quiz: [
+        { q: "What shape does the text-to-video workflow have across Runway, Pika, Kling, and Veo?", options: ["Completely different in each tool", "Prompt in, clip out — the same shape everywhere", "Only works on Runway", "Requires coding skills"], answer: 1, why: "Different buttons, same shape — the skills transfer." },
+        { q: "What aspect ratio should you use for TikTok, Reels, and Shorts?", options: ["16:9 (landscape)", "1:1 (square)", "9:16 (vertical)", "4:3"], answer: 2, why: "Vertical video fills the phone screen." },
+        { q: "Why does iterating on a prompt twice usually beat writing one long perfect prompt?", options: ["It uses more free credits", "The model needs a chance to show you what it can do", "Two prompts are always higher quality", "It is faster"], answer: 1, why: "Two short iterations are a conversation; one long prompt is a guess." },
+        { q: "What is a realistic “keeper rate” when generating clips?", options: ["100%", "50%", "20%", "0%"], answer: 2, why: "Generate 10, keep 2 — that is normal, not failure." },
+        { q: "What is the benefit of image-to-video mode?", options: ["It makes clips longer than two minutes", "It keeps a subject consistent across shots", "It removes the need for a script", "It adds captions automatically"], answer: 1, why: "Animating the same first frame keeps your subject consistent." }
+      ],
+      exercise: [
+        "Open one text-to-video tool (Runway, Pika, or Kling).",
+        "Generate at least 8 clips from your lesson 2 script — try at least two variations of at least one shot.",
+        "Keep your best 3–4 clips (one per shot) and download them immediately.",
+        "Name them like a professional: project-shot1-tool.mp4.",
+        "Save everything in your “my-course-work/my-first-film/” folder."
+      ]
+    },
+    {
+      id: 4,
+      title: "Adding a Voice and Captions",
+      length: "~15 min",
+      goal: "Generate a natural AI voiceover with ElevenLabs and add clean auto-captions in CapCut.",
+      sections: [
+        { h: "The hook", p: [
+          "Silent videos get watched. Narrated, captioned videos get remembered. Today we add both — and it is easier than you think."
+        ]},
+        { h: "1. Write a voiceover that fits AI visuals", p: [
+          "Rule one: five to seven words per sentence. One idea per sentence. AI clips are short, so your sentences must be too. Rule two: a thirty-second video is only sixty to seventy-five words — four or five sentences, nothing more. Rule three: read it aloud. If you run out of breath, split the sentence.",
+          "Example voiceover for the restaurant film: “Some places feed you. This place welcomes you. Jollof, cooked slow, served fast. Adunni's Kitchen. Come hungry.” Twenty-two words, four sentences, fits thirty seconds perfectly."
+        ]},
+        { h: "2. ElevenLabs — generate the voiceover", p: [
+          "Open ElevenLabs and choose Text to Speech. Paste your script. Pick a voice — or clone your own voice, which you only ever do with your own voice or someone's with written consent. One setting matters most: stability. Lower means more emotional and expressive; higher means steadier and calmer. For beginners, keep it in the middle. Generate in chunks — one paragraph at a time — and keep the takes you like."
+        ]},
+        { h: "3. The budget alternative", p: [
+          "You can skip ElevenLabs entirely and record your own voice on your phone in a quiet room. Honest truth: for a personal brand, your own voice always wins, because nobody can clone you. AI voices are for clients, for testing, and for when you need a voice you do not have."
+        ]},
+        { h: "4. Captions are non-negotiable", p: [
+          "Most people watch social video with the sound off first. If you have no captions, you lose them before the first second ends. Captions are not an optional extra — they are part of the video."
+        ]},
+        { h: "5. Auto-captions in CapCut", p: [
+          "Import your voiceover, tap Auto Captions, and generate. Then proofread every single line — AI captions murder names and slang. Now style them: three to four words per line, a high-contrast outline, and keep them inside the safe margins so the platform's interface does not cover them."
+        ]},
+        { h: "6. Sync voice to pictures", p: [
+          "Lay your clips on the timeline, drag the voiceover in, and cut the picture when the sentence changes. The ear leads the eye — every new sentence is a new shot. When the words change and the picture changes at the same moment, the video feels alive."
+        ]}
+      ],
+      videoScript: [
+        { t: "0:00–0:30", screen: "Same clip shown twice: once silent (viewer looks bored), once with voice + captions (viewer watches to the end)", audio: "Hook narration" },
+        { t: "0:30–3:00", screen: "The example voiceover on screen, word count ticking up (22 words), sentences highlighted one at a time", audio: "Section 1: voiceover rules" },
+        { t: "3:00–7:00", screen: "Screen recording: ElevenLabs Text-to-Speech, script pasted, voice selected, stability slider explained, two takes generated and compared", audio: "Section 2: ElevenLabs" },
+        { t: "7:00–8:30", screen: "Phone recording in a quiet room (a closet full of clothes = free sound treatment), waveform shown", audio: "Section 3: budget alternative" },
+        { t: "8:30–9:30", screen: "Stat graphic: most social video is watched on mute first — captions are part of the video", audio: "Section 4: captions non-negotiable" },
+        { t: "9:30–12:30", screen: "Screen recording: CapCut auto-captions generated, errors circled and fixed live, caption style applied (3–4 words/line, outline, safe margins)", audio: "Section 5: auto-captions" },
+        { t: "12:30–15:00", screen: "Timeline view: clips + voiceover, cuts landing exactly on sentence changes, played back in full", audio: "Section 6: sync + wrap up" }
+      ],
+      quiz: [
+        { q: "How many words should a 30-second voiceover be?", options: ["10–20 words", "60–75 words", "200–300 words", "500 words"], answer: 1, why: "Four or five short sentences — 60–75 words fits 30 seconds." },
+        { q: "What is the “stability” setting in ElevenLabs?", options: ["How long the voice lasts", "Lower = more expressive, higher = steadier", "The volume of the voice", "The price per generation"], answer: 1, why: "Stability controls how expressive vs steady the delivery is." },
+        { q: "Why are captions described as non-negotiable?", options: ["Because they make videos longer", "Because most people watch social video with the sound off first", "Because AI tools cannot generate them", "Because they replace the need for a voiceover"], answer: 1, why: "Viewers on mute need captions — without them you lose the first second." },
+        { q: "What must you always do after generating auto-captions?", options: ["Translate them to another language", "Proofread every line — AI captions make mistakes", "Make them as long as possible", "Export them as a separate file"], answer: 1, why: "AI captions butcher names and slang — always proofread." },
+        { q: "“The ear leads the eye” means…", options: ["Music is more important than visuals", "Every new sentence should be a new shot", "Voiceovers should be recorded last", "Captions should match the music"], answer: 1, why: "Cut the picture when the sentence changes." }
+      ],
+      exercise: [
+        "Write a 30-second voiceover (60–75 words, 5–7 words per sentence) for your film.",
+        "Generate it with ElevenLabs (or record your own voice on your phone in a quiet room).",
+        "Import it into CapCut, generate auto-captions, and proofread every line.",
+        "Style the captions: 3–4 words per line, high contrast, inside the safe margins.",
+        "Save the project as “my-first-film” in CapCut."
+      ]
+    },
+    {
+      id: 5,
+      title: "Editing and Polishing",
+      length: "~18 min",
+      goal: "Stitch clips, voiceover, and captions into a polished 30–60 second video — exported for TikTok, Reels, and Shorts.",
+      sections: [
+        { h: "The hook", p: [
+          "This is the lesson that separates an AI experiment from an actual video. CapCut is free, and it does everything a beginner needs."
+        ]},
+        { h: "1. The workspace", p: [
+          "Import your clips, your voiceover, and a music track. Here is the timeline: clips on top, voiceover on an audio track, music on a lower track. That is the whole layout — everything else is detail."
+        ]},
+        { h: "2. Pacing — cut to the beat", p: [
+          "Cut on the sentence beats you learned in lesson four. Remove dead air. Tighten every cut, because attention is currency. Then learn two professional tricks. The J-cut: the next clip's audio starts a beat before the picture changes. The L-cut: the current clip's audio rolls over the next shot. Together they make your edits feel invisible — viewers stop noticing the cuts and start watching the story."
+        ]},
+        { h: "3. Title card", p: [
+          "Two to three seconds at the very start: what the video is about, in words a phone screen can read. If viewers cannot tell what you offer in three seconds, they scroll."
+        ]},
+        { h: "4. Transitions that do not look cheap", p: [
+          "Use match cuts and speed ramps. Avoid star wipes, lightning bolts, and anything that screams 2012. One transition style per video, maximum. The best transition is usually no transition at all — just a well-timed cut."
+        ]},
+        { h: "5. Color — the consistency tell", p: [
+          "Apply one color grade across every clip. When shot one is warm and shot two is cold, viewers think “AI” before they think anything else. Same grade, same film."
+        ]},
+        { h: "6. Music and sound", p: [
+          "Use royalty-free music — the CapCut library, the YouTube Audio Library, Pixabay. Then duck it: lower the music twelve to eighteen decibels under the voiceover so the speech stays clear. Add subtle sound effects between shots — a soft whoosh, a gentle pop — but less is more."
+        ]},
+        { h: "7. Export for each platform", p: [
+          "TikTok, Reels, Shorts: 1080 by 1920 — vertical, 9:16 — at thirty frames per second. YouTube and Facebook feed: 1920 by 1080, or 1080 by 1080 for square. Always export at the highest quality and let the platform compress it — never compress twice."
+        ]}
+      ],
+      videoScript: [
+        { t: "0:00–0:30", screen: "Side-by-side: messy uncut clips vs the finished polished film", audio: "Hook narration" },
+        { t: "0:30–2:00", screen: "Screen recording: importing clips, voiceover, music; timeline layout labelled", audio: "Section 1: workspace" },
+        { t: "2:00–5:30", screen: "Cuts landing on sentence beats; J-cut and L-cut shown in slow motion with audio waveforms visible", audio: "Section 2: pacing" },
+        { t: "5:30–7:00", screen: "Three title card examples (good, bad, ugly) with a 3-second timer", audio: "Section 3: title card" },
+        { t: "7:00–8:30", screen: "Cheap transitions shown with a red X; match cut and speed ramp shown with a green tick", audio: "Section 4: transitions" },
+        { t: "8:30–10:30", screen: "Before/after: mismatched clips graded to one warm look, slider moves shown", audio: "Section 5: color" },
+        { t: "10:30–13:00", screen: "Music track added, ducking shown on the decibel meter, subtle SFX between shots", audio: "Section 6: music and sound" },
+        { t: "13:00–16:30", screen: "Export settings screen: 1080x1920 / 9:16 / 30fps for vertical; 1920x1080 and 1080x1080 alternatives", audio: "Section 7: export" },
+        { t: "16:30–18:00", screen: "Final film played in full, end card: “Next: getting paid”", audio: "Wrap up" }
+      ],
+      quiz: [
+        { q: "What is a J-cut?", options: ["A cut shaped like the letter J", "The next clip's audio starts before the picture changes", "A transition with a star wipe", "A cut that removes the audio entirely"], answer: 1, why: "Audio leads, picture follows — edits feel invisible." },
+        { q: "How long should a title card be?", options: ["10 seconds", "2–3 seconds", "Half the video", "There should be no title card"], answer: 1, why: "If viewers cannot tell what you offer in three seconds, they scroll." },
+        { q: "Why apply one color grade across every clip?", options: ["To make the video longer", "Mismatched colors are the number one “this looks AI” tell", "It removes the need for captions", "It makes the music louder"], answer: 1, why: "Same grade, same film — consistency reads as professional." },
+        { q: "How loud should background music be under a voiceover?", options: ["Louder than the voice", "The same volume as the voice", "12–18 decibels lower than the voice", "Music should never be used"], answer: 2, why: "Ducking keeps the speech clear while music adds energy." },
+        { q: "What export settings are right for TikTok, Reels, and Shorts?", options: ["1920x1080, 16:9, 60fps", "1080x1920, 9:16, 30fps", "720x1280, 9:16, 24fps", "1080x1080, 1:1, 30fps"], answer: 1, why: "Vertical 9:16 at 1080x1920, 30fps." }
+      ],
+      exercise: [
+        "Open CapCut and start a new project called “my-first-film”.",
+        "Assemble your film: 5 clips + voiceover + captions + title card + music + one color grade.",
+        "Cut every shot to a sentence beat; use at least one J-cut or L-cut.",
+        "Duck the music 12–18dB under the voiceover.",
+        "Export in 9:16 (1080x1920, 30fps). Your film should be 30–60 seconds long."
+      ]
+    },
+    {
+      id: 6,
+      title: "Getting Paid for This Skill",
+      length: "~15 min",
+      goal: "Know the three realistic ways to earn from AI video creation — and how to price a first client project so it is easy to say yes to.",
+      sections: [
+        { h: "The hook", p: [
+          "Everything so far was practice. This lesson is the payoff — how to turn the skill you just learned into income."
+        ]},
+        { h: "1. Path one — your own content", p: [
+          "Post your films consistently and monetize the views: creator programs, ads, sponsorships. Your course project is your first portfolio piece — publish it publicly this week, not when it is perfect. Perfect is a moving target; published is a fact."
+        ]},
+        { h: "2. Path two — local businesses", p: [
+          "Restaurants, salons, churches, shops: everyone needs social content, and nobody has time to make it. The move is the demo-first pitch: make one free sample video for a local business, show it to them, then offer a monthly package. Do not sell “posts” — sell a package. Four to eight videos a month, delivered on a schedule. A package is easy to say yes to, easy to deliver, and it pays every month."
+        ]},
+        { h: "3. Path three — freelance platforms", p: [
+          "Fiverr, Upwork, Twitter, LinkedIn. Start with a narrow offer: “I make thirty-second AI videos for restaurants.” Narrow beats general every time, because a specific offer is easy to say yes to and easy to find. And remember: your first three jobs are for reviews, not riches. Deliver fast, over-communicate, ask for a review, and raise your price."
+        ]},
+        { h: "4. Pricing your first client project", p: [
+          "Do not charge hourly — charge per video or per package. First-client pricing should be low enough to say yes to and high enough to respect: ₦15,000–₦30,000 per video, or ₦40,000–₦60,000 a month for a package. Raise your price every three to five clients. And always — always — get fifty percent upfront. The client who pays fifty percent upfront is the client who respects your time."
+        ]},
+        { h: "5. The wrap", p: [
+          "You now have the full pipeline: script, generate, voice, captions, edit, get paid. The tools will change — new names, new buttons, new prices. The pipeline will not. Learn the pipeline once, and you can use any tool that comes next."
+        ]}
+      ],
+      videoScript: [
+        { t: "0:00–0:30", screen: "The student's finished film playing, then a phone screen showing it posted publicly with views ticking up", audio: "Hook narration" },
+        { t: "0:30–2:30", screen: "Three income paths as animated cards: Own content / Local businesses / Freelance platforms", audio: "Section 1: own content" },
+        { t: "2:30–5:30", screen: "Screen recording: a real local business's page, a sample video made for them, then the pitch message shown in full on screen", audio: "Section 2: local businesses" },
+        { t: "5:30–8:00", screen: "Fiverr search results for “AI video”, a narrow gig listing vs a wide one compared side by side", audio: "Section 3: freelance platforms" },
+        { t: "8:00–11:30", screen: "Price list graphic: ₦15,000–₦30,000 per video; ₦40,000–₦60,000/month package; “50% upfront” stamp; “raise every 3–5 clients” arrow", audio: "Section 4: pricing" },
+        { t: "11:30–13:30", screen: "The full pipeline diagram from lesson 1, now with a money icon at the end", audio: "Section 5: the wrap" },
+        { t: "13:30–15:00", screen: "Homework on screen: “1. Post your film. 2. Pitch 3 businesses.” End card", audio: "Closing" }
+      ],
+      quiz: [
+        { q: "What is the “demo-first pitch”?", options: ["Charging a client before showing any work", "Making one free sample video for a business, then offering a package", "Sending a price list to every business in town", "Posting your portfolio and waiting for clients"], answer: 1, why: "One free sample proves the value before you ask for the sale." },
+        { q: "What should you sell to a local business instead of single “posts”?", options: ["A one-off video", "A monthly package of 4–8 videos", "A subscription to your own channel", "A camera"], answer: 1, why: "A package is easy to say yes to, easy to deliver, and pays monthly." },
+        { q: "Why start with a narrow freelance offer like “30-second AI videos for restaurants”?", options: ["It is easier to say yes to and easier to find", "It charges more than a general offer", "It requires less skill", "It avoids the need for reviews"], answer: 0, why: "Narrow beats general — specific offers get specific clients." },
+        { q: "What is a realistic first-client price for one video?", options: ["₦500", "₦15,000–₦30,000", "₦1,000,000", "Free, forever"], answer: 1, why: "Low enough to say yes to, high enough to respect." },
+        { q: "How much of the payment should you get upfront, always?", options: ["Nothing — invoice on completion", "10%", "50%", "100% only after delivery"], answer: 2, why: "Fifty percent upfront filters serious clients and respects your time." }
+      ],
+      exercise: [
+        "Post your finished film publicly — TikTok, Instagram Reels, YouTube Shorts, or X. It does not need to be perfect; it needs to be published.",
+        "Write a pitch message (3–4 sentences: who you are, what you made for them, what you offer, what it costs).",
+        "Send it to 3 local businesses this week — a restaurant, a salon, a shop, a church, anyone with something to sell.",
+        "Record your results in a notebook: who replied, who said no, what you will change next time."
+      ]
+    }
+  ]
+};
+
+/* ================= STATE ================= */
+const STORE_KEY = "aiVideoCourseProgress_v1";
+let state = loadState();
+let current = 0; // -1 = welcome
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (s && typeof s === "object") return { done: s.done || {}, scores: s.scores || {} };
+  } catch (e) {}
+  return { done: {}, scores: {} };
+}
+function saveState() {
+  localStorage.setItem(STORE_KEY, JSON.stringify(state));
+}
+
+/* ================= RENDER ================= */
+const main = document.getElementById("main");
+const lessonList = document.getElementById("lessonList");
+
+function renderSidebar() {
+  lessonList.innerHTML = "";
+  COURSE.lessons.forEach((l, i) => {
+    const li = document.createElement("li");
+    li.className = "lesson-item" + (state.done[l.id] ? " done" : "") + (i === current ? " active" : "");
+    const btn = document.createElement("button");
+    btn.innerHTML = '<span class="lesson-num"><span>' + l.id + "</span></span><span>" + l.title + "</span>";
+    btn.addEventListener("click", () => { current = i; render(); });
+    li.appendChild(btn);
+    lessonList.appendChild(li);
+  });
+  const doneCount = COURSE.lessons.filter(l => state.done[l.id]).length;
+  document.getElementById("progressFill").style.width = (doneCount / COURSE.lessons.length * 100) + "%";
+  document.getElementById("progressLabel").textContent =
+    doneCount + " of " + COURSE.lessons.length + " lessons completed";
+}
+
+function render() {
+  renderSidebar();
+  if (current === -1) { renderWelcome(); return; }
+  const l = COURSE.lessons[current];
+  const score = state.scores[l.id];
+
+  let html = "";
+  html += '<div class="lesson-head">';
+  html += '<div class="lesson-kicker">Lesson ' + l.id + " of " + COURSE.lessons.length + "</div>";
+  html += "<h2>" + l.title + "</h2>";
+  html += '<div class="lesson-meta"><span class="chip">🎬 ' + l.length + '</span><span class="chip">🎯 ' + l.goal + "</span></div>";
+  html += "</div>";
+
+  // audio
+  html += '<div class="card"><h3><span class="icon">🔊</span> Lesson audio</h3>';
+  html += '<div class="audio-box"><audio controls preload="none" src="audio/lesson-' + l.id + '.wav">Your browser does not support the audio element.</audio></div>';
+  html += '<div class="audio-note">Audio plays from <code>audio/lesson-' + l.id + '.wav</code>. To use higher-quality narration, export an MP3 from ElevenLabs (see <code>audio/README.md</code>) and save it with the same file name — the player picks it up automatically.</div>';
+  html += "</div>";
+
+  // lesson text
+  html += '<div class="card"><h3><span class="icon">📖</span> Lesson notes</h3>';
+  l.sections.forEach(s => {
+    html += '<div class="lesson-section"><h4>' + s.h + "</h4>";
+    s.p.forEach(p => { html += "<p>" + p + "</p>"; });
+    html += "</div>";
+  });
+  html += "</div>";
+
+  // video script
+  html += '<div class="card video-script"><h3><span class="icon">🎥</span> Video script <span style="font-weight:400;font-size:12px;color:var(--muted)">(for recording your own version)</span></h3>';
+  html += "<table><thead><tr><th>Time</th><th>On screen</th><th>Audio / notes</th></tr></thead><tbody>";
+  l.videoScript.forEach(v => {
+    html += "<tr><td>" + v.t + "</td><td>" + v.screen + "</td><td>" + v.audio + "</td></tr>";
+  });
+  html += "</tbody></table></div>";
+
+  // quiz
+  html += '<div class="card" id="quizCard"><h3><span class="icon">✅</span> Quiz — 5 questions</h3><div id="quizBody">';
+  l.quiz.forEach((q, qi) => {
+    html += '<div class="quiz-q" data-q="' + qi + '"><p class="q">' + (qi + 1) + ". " + q.q + "</p>";
+    q.options.forEach((opt, oi) => {
+      html += '<label class="quiz-opt" data-oi="' + oi + '"><input type="radio" name="q' + qi + '" value="' + oi + '"><span class="opt-letter">' + "ABCD"[oi] + '.</span> <span>' + opt + "</span></label>";
+    });
+    html += '<div class="quiz-feedback" id="fb-' + qi + '"></div></div>';
+  });
+  html += "</div>";
+  html += '<div class="quiz-actions"><button class="btn" id="checkBtn">Check answers</button><button class="btn secondary" id="retryBtn">Retry</button><span class="quiz-score" id="quizScore"></span></div>';
+  html += "</div>";
+
+  // exercise
+  html += '<div class="card exercise"><h3><span class="icon">💪</span> Exercise</h3><ol>';
+  l.exercise.forEach(e => { html += "<li>" + e + "</li>"; });
+  html += "</ol></div>";
+
+  // nav
+  html += '<div class="lesson-nav">';
+  html += '<button class="btn secondary" id="prevBtn"' + (current === 0 ? " disabled" : "") + ">← Previous</button>";
+  if (current < COURSE.lessons.length - 1) {
+    html += '<button class="btn" id="nextBtn">Next lesson →</button>';
+  } else {
+    html += '<button class="btn" id="finishBtn">Finish course ✓</button>';
+  }
+  html += "</div>";
+
+  main.innerHTML = html;
+
+  // quiz events
+  document.getElementById("checkBtn").addEventListener("click", checkQuiz);
+  document.getElementById("retryBtn").addEventListener("click", () => {
+    document.querySelectorAll(".quiz-opt").forEach(o => {
+      o.classList.remove("correct", "wrong", "disabled");
+      o.querySelector("input").checked = false;
+    });
+    document.querySelectorAll(".quiz-feedback").forEach(f => f.classList.remove("show"));
+    document.getElementById("quizScore").textContent = "";
+    document.getElementById("quizScore").className = "quiz-score";
+  });
+  document.getElementById("prevBtn").addEventListener("click", () => { if (current > 0) { current--; render(); window.scrollTo(0, 0); } });
+  const nextBtn = document.getElementById("nextBtn");
+  if (nextBtn) nextBtn.addEventListener("click", () => { current++; render(); window.scrollTo(0, 0); });
+  const finishBtn = document.getElementById("finishBtn");
+  if (finishBtn) finishBtn.addEventListener("click", () => { current = -1; render(); window.scrollTo(0, 0); });
+}
+
+function checkQuiz() {
+  const l = COURSE.lessons[current];
+  let correct = 0;
+  l.quiz.forEach((q, qi) => {
+    const qEl = document.querySelector('.quiz-q[data-q="' + qi + '"]');
+    const chosen = qEl.querySelector("input:checked");
+    const fb = document.getElementById("fb-" + qi);
+    qEl.querySelectorAll(".quiz-opt").forEach(o => o.classList.add("disabled"));
+    if (!chosen) {
+      fb.textContent = "⚠️ No answer selected. " + q.why;
+      fb.classList.add("show");
+      return;
+    }
+    const oi = Number(chosen.value);
+    const optEls = qEl.querySelectorAll(".quiz-opt");
+    optEls[q.answer].classList.add("correct");
+    if (oi === q.answer) {
+      correct++;
+      fb.textContent = "✓ Correct! " + q.why;
+    } else {
+      optEls[oi].classList.add("wrong");
+      fb.textContent = "✗ Not quite. " + q.why;
+    }
+    fb.classList.add("show");
+  });
+  const scoreEl = document.getElementById("quizScore");
+  const passed = correct >= 3;
+  scoreEl.textContent = "You scored " + correct + "/5" + (passed ? " — passed ✓" : " — review and retry");
+  scoreEl.className = "quiz-score " + (passed ? "pass" : "fail");
+  if (passed) {
+    state.done[l.id] = true;
+    state.scores[l.id] = correct;
+    saveState();
+    renderSidebar();
+  }
+}
+
+function renderWelcome() {
+  const doneCount = COURSE.lessons.filter(l => state.done[l.id]).length;
+  const avgScore = Object.keys(state.scores).length
+    ? Math.round(Object.values(state.scores).reduce((a, b) => a + b, 0) / Object.keys(state.scores).length * 10) / 10
+    : "—";
+  main.innerHTML =
+    '<div class="card welcome">' +
+    "<h2>🎬 AI Video Creation for Beginners</h2>" +
+    "<p>Welcome! This course takes you from zero to a finished, publishable AI video — and shows you how to get paid for making more. No camera, no editing degree, no coding. Work through the 6 lessons in order: listen to the audio, read the notes, take the quiz, and do the exercise.</p>" +
+    '<div class="stats">' +
+    '<div class="stat"><b>6</b><span>lessons</span></div>' +
+    '<div class="stat"><b>30</b><span>quiz questions</span></div>' +
+    '<div class="stat"><b>' + doneCount + "/6</b><span>completed</span></div>" +
+    '<div class="stat"><b>' + avgScore + "</b><span>avg quiz score</span></div>" +
+    "</div>" +
+    '<button class="btn" id="startBtn">Start lesson 1 →</button>' +
+    (doneCount > 0 ? '<div style="margin-top:14px"><button class="btn secondary" id="resetBtn">Reset progress</button></div>' : "") +
+    "</div>";
+  document.getElementById("startBtn").addEventListener("click", () => { current = 0; render(); });
+  const resetBtn = document.getElementById("resetBtn");
+  if (resetBtn) resetBtn.addEventListener("click", () => {
+    if (confirm("Reset all progress and quiz scores?")) {
+      state = { done: {}, scores: {} };
+      saveState();
+      render();
+    }
+  });
+}
+
+/* ================= INIT ================= */
+document.getElementById("menuToggle").addEventListener("click", () => {
+  document.getElementById("sidebar").classList.toggle("open");
+});
+render();
+</script>
+</body>
+</html>
