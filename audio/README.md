@@ -4,7 +4,7 @@ This folder contains the narration audio for each lesson.
 
 ## Current files
 
-`lesson-1.wav` … `lesson-6.wav` — placeholder narration generated with Windows' built-in speech voice (Microsoft Zira). They work out of the box but sound robotic.
+`lesson-1.mp3` … `lesson-6.mp3` — narration generated with Microsoft's neural text-to-speech voice (Edge TTS, en-US-GuyNeural). Good quality, small file size.
 
 ## Upgrade to studio quality (recommended)
 

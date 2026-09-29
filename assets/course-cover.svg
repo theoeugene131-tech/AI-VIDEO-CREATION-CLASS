@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#c2570b"/>
+      <stop offset="100%" style="stop-color:#e8890c"/>
+    </linearGradient>
+    <linearGradient id="card1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f3460"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Decorative elements -->
+  <circle cx="1050" cy="80" r="200" fill="#c2570b" opacity="0.08"/>
+  <circle cx="100" cy="550" r="150" fill="#e8890c" opacity="0.06"/>
+  <rect x="850" y="400" width="300" height="200" rx="20" fill="url(#card1)" opacity="0.5"/>
+  <rect x="900" y="430" width="200" height="14" rx="7" fill="url(#accent)" opacity="0.6"/>
+  <rect x="900" y="460" width="160" height="14" rx="7" fill="#ffffff" opacity="0.15"/>
+  <rect x="900" y="490" width="180" height="14" rx="7" fill="#ffffff" opacity="0.1"/>
+
+  <!-- Play button icon -->
+  <circle cx="1000" cy="500" r="45" fill="url(#accent)"/>
+  <polygon points="985,475 985,525 1025,500" fill="#ffffff"/>
+
+  <!-- AI Video icon elements -->
+  <rect x="80" y="120" width="80" height="60" rx="12" fill="url(#accent)" opacity="0.9"/>
+  <polygon points="105,135 105,165 135,150" fill="#ffffff"/>
+
+  <!-- Main title area -->
+  <text x="80" y="220" font-family="Segoe UI, Arial, sans-serif" font-size="52" font-weight="bold" fill="#ffffff">AI Video Creation</text>
+  <text x="80" y="290" font-family="Segoe UI, Arial, sans-serif" font-size="52" font-weight="bold" fill="url(#accent)">for Beginners</text>
+
+  <!-- Subtitle -->
+  <text x="80" y="350" font-family="Segoe UI, Arial, sans-serif" font-size="24" fill="#a0aec0">Make scroll-stopping videos with AI tools</text>
+
+  <!-- Feature pills -->
+  <rect x="80" y="400" width="140" height="40" rx="20" fill="#c2570b" opacity="0.2"/>
+  <text x="150" y="426" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#e8890c" text-anchor="middle">6 Lessons</text>
+
+  <rect x="240" y="400" width="180" height="40" rx="20" fill="#c2570b" opacity="0.2"/>
+  <text x="330" y="426" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#e8890c" text-anchor="middle">Audio + Quizzes</text>
+
+  <rect x="440" y="400" width="200" height="40" rx="20" fill="#c2570b" opacity="0.2"/>
+  <text x="540" y="426" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#e8890c" text-anchor="middle">No Camera Needed</text>
+
+  <rect x="660" y="400" width="180" height="40" rx="20" fill="#c2570b" opacity="0.2"/>
+  <text x="750" y="426" font-family="Segoe UI, Arial, sans-serif" font-size="16" fill="#e8890c" text-anchor="middle">Get Paid Skills</text>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="560" width="1200" height="70" fill="#000000" opacity="0.3"/>
+  <text x="80" y="600" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#a0aec0">Tools: Runway • Pika • Kling • ElevenLabs • CapCut</text>
+  <text x="1120" y="600" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#e8890c" text-anchor="end" font-weight="bold">₦15,000</text>
+
+  <!-- Badge -->
+  <rect x="950" y="60" width="200" height="50" rx="25" fill="url(#accent)"/>
+  <text x="1050" y="92" font-family="Segoe UI, Arial, sans-serif" font-size="18" fill="#ffffff" text-anchor="middle" font-weight="bold">COMPLETE COURSE</text>
+</svg>

@@ -7,7 +7,7 @@ A complete, self-contained course: 6 lessons with audio narration, video scripts
 ```
 ai-video-creation-course/
 ├── README.md                     ← you are here
-├── course-player.html            ← the standalone course (double-click to open)
+├── index.html                    ← the standalone course (double-click to open)
 ├── lessons/
 │   ├── lesson-1.md               ← full content: narration script, video script, quiz, exercise
 │   ├── lesson-2.md
@@ -16,15 +16,17 @@ ai-video-creation-course/
 │   ├── lesson-5.md
 │   └── lesson-6.md
 ├── audio/
-│   ├── lesson-1.wav … lesson-6.wav   ← narration audio (placeholder quality — see below)
+│   ├── lesson-1.mp3 … lesson-6.mp3   ← narration audio (neural voice — see below)
 │   └── README.md                 ← how to regenerate studio-quality audio
 └── assets/
-    └── prompt-cheat-sheet.md     ← bonus toolkit for students
+    ├── prompt-cheat-sheet.md     ← bonus toolkit for students
+    ├── course-intro.md           ← sales copy (full / short / one-liner)
+    └── course-cover.jpg/png/svg  ← course cover images
 ```
 
 ## How to use the course
 
-1. **Open `course-player.html`** in any browser (Chrome, Edge, phone, tablet — anything).
+1. **Open `index.html`** in any browser (Chrome, Edge, phone, tablet — anything).
 2. Work through lessons 1–6 in order. Each lesson has:
    - **Audio** — press play and listen (or read the full lesson text on screen)
    - **Video script** — what appears on screen, with timestamps (for recording your own version)
@@ -34,7 +36,7 @@ ai-video-creation-course/
 
 ## About the audio files
 
-The included `.wav` files are **placeholder narration** generated with Windows' built-in speech voice, so the course works out of the box. They are functional but robotic.
+The included `.mp3` files are narration generated with Microsoft's neural text-to-speech voice (Edge TTS, en-US-GuyNeural) — natural-sounding and small (~9 MB total).
 
 To replace them with studio-quality narration (which is exactly what lesson 4 teaches):
 
